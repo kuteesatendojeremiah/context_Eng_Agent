@@ -11,7 +11,7 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 
-// ── CLI Colors ────────────────────────────────────────────────────────────────
+// ── CLI Colors ────────────────────────────────────────────────
 const c = {
   reset: "\x1b[0m",
   cyan: "\x1b[36m",
@@ -47,7 +47,8 @@ async function promptUser(question) {
 async function main() {
   printBanner();
 
-  const repoPath = process.env.REPO_PATH || "./sample_repo";
+  // ✅ Use /tmp for Vercel, ./sample_repo locally if REPO_PATH is set
+  const repoPath = process.env.REPO_PATH || path.join("/tmp", "sample_repo");
 
   // Check for required env vars
   if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === "your_anthropic_api_key_here") {
@@ -91,8 +92,8 @@ ${c.reset}`);
   const results = await orchestrator.run(userTask);
 
   // Save report
-  const reportPath = `./reports/report_${Date.now()}.json`;
-  fs.mkdirSync("./reports", { recursive: true });
+  const reportPath = path.join(process.cwd(), "reports", `report_${Date.now()}.json`);
+  fs.mkdirSync(path.join(process.cwd(), "reports"), { recursive: true });
   orchestrator.saveReport(results, reportPath);
 
   // Print summary
@@ -126,117 +127,6 @@ function createSampleRepo(repoPath) {
   fs.mkdirSync(path.join(repoPath, "src/components"), { recursive: true });
   fs.mkdirSync(path.join(repoPath, "src/api"), { recursive: true });
   fs.mkdirSync(path.join(repoPath, "src/utils"), { recursive: true });
-
-  // CLAUDE.md
-  fs.writeFileSync(path.join(repoPath, "CLAUDE.md"), `# Project: SampleApp
-
-## Stack
-- Frontend: React 18 + TypeScript
-- Backend: Node.js + Express
-- Database: PostgreSQL
-- Tests: Jest + React Testing Library
-
-## Architecture
-- /src/components - React components
-- /src/api - Express route handlers
-- /src/utils - Shared utilities
-
-## Conventions
-- Use async/await (no callbacks)
-- All components must be typed with TypeScript
-- Write tests for all new functions
-- API routes follow REST conventions
-
-## Known Patterns
-- Auth uses JWT tokens stored in httpOnly cookies
-- renewSession() refreshes auth tokens (NOT refreshToken())
-- Database queries go through /src/utils/db.js helper
-`);
-
-  // Sample files
-  fs.writeFileSync(path.join(repoPath, "src/components/UserForm.tsx"), `
-import React, { useState } from 'react';
-
-interface UserFormProps {
-  onSubmit: (data: UserData) => void;
-}
-
-interface UserData {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export function UserForm({ onSubmit }: UserFormProps) {
-  const [formData, setFormData] = useState<UserData>({
-    name: '',
-    email: '',
-    password: '',
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-      <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-      <input type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
-      <button type="submit">Submit</button>
-    </form>
-  );
-}
-`);
-
-  fs.writeFileSync(path.join(repoPath, "src/api/users.js"), `
-const express = require('express');
-const router = express.Router();
-const { db } = require('../utils/db');
-
-// GET /api/users/:id
-router.get('/:id', async (req, res) => {
-  try {
-    const user = await db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
-    if (!user.rows[0]) return res.status(404).json({ error: 'User not found' });
-    res.json(user.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// POST /api/users
-router.post('/', async (req, res) => {
-  const { name, email, password } = req.body;
-  const user = await db.query(
-    'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-    [name, email, password]
-  );
-  res.status(201).json(user.rows[0]);
-});
-
-module.exports = router;
-`);
-
-  fs.writeFileSync(path.join(repoPath, "src/utils/auth.js"), `
-const jwt = require('jsonwebtoken');
-
-function generateToken(userId) {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-}
-
-async function renewSession(req, res) {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: 'No session' });
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const newToken = generateToken(decoded.userId);
-  res.cookie('token', newToken, { httpOnly: true });
-  return newToken;
-}
-
-module.exports = { generateToken, renewSession };
-`);
 
   fs.writeFileSync(path.join(repoPath, "README.md"), `# SampleApp
 A sample web application for testing the multi-agent code assistant.
