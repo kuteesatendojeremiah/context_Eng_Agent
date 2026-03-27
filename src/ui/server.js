@@ -157,6 +157,11 @@ app.get("/preview/:file", (req, res) => {
   res.send(fs.readFileSync(filePath, "utf8"));
 });
 
+// ── Root route ──────────────────────────────────────────────
+app.get("/", (req, res) => {
+  res.send("<h1>Context-Eng Agent is running 🚀</h1>");
+});
+
 server.listen(PORT, () => {
   console.log(`\n🌐 Web UI running at http://localhost:${PORT}`);
 });
