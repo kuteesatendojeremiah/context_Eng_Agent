@@ -2,7 +2,7 @@
 
 > Based on: **"Context Engineering for Multi-Agent LLM Code Assistants"** (arXiv:2508.08322)
 
-A full implementation of the multi-agent pipeline from the paper, with practical substitutes for unavailable services.
+A full implementation of the multi-agent pipeline.
 
 ---
 
@@ -13,13 +13,13 @@ User Request
      │
      ▼
 ┌─────────────────┐
-│ Intent Translator│  ← Claude Opus  (paper: GPT-5)
+│ Intent Translator│  ← Claude Opus  ( GPT-5)
 │  (Phase 1)       │
 └────────┬────────┘
          │ Structured Task Spec
          ▼
 ┌─────────────────┐
-│ Knowledge        │  ← Web Search API  (paper: Elicit)
+│ Knowledge        │  ← Web Search API  (Elicit)
 │ Retriever (Ph.2) │
 └────────┬────────┘
          │ Retrieved Docs
