@@ -108,6 +108,36 @@ node src/ui/server.js
 # Open http://localhost:3000
 ```
 
+## Deploy On Vercel
+
+This repo now supports Vercel serverless deployment using [api/index.js](api/index.js) and [vercel.json](vercel.json).
+
+### Required environment variables
+
+- `ANTHROPIC_API_KEY`
+- `SUBAGENT_MODEL` (optional)
+- `INTENT_MODEL` (optional)
+- `ORCHESTRATOR_MODEL` (optional)
+
+### Deploy steps
+
+```bash
+npm install
+vercel
+```
+
+### Quick verification after deploy
+
+1. Open the deployed URL and verify the main dashboard loads.
+2. Submit a short task and confirm `/api/run` returns a completed response.
+3. Check that report and preview entries appear in the UI.
+
+### Notes for serverless runtime
+
+- Runtime artifacts (reports, previews, and index cache) are written to `/tmp` on Vercel.
+- Server-sent events (SSE) were replaced with request/response execution for serverless compatibility.
+- Long-running jobs can hit serverless timeout limits. For heavy workloads, run orchestration on a separate worker service and keep Vercel as the UI/API gateway.
+
 ---
 
 ## Project Structure
@@ -188,6 +218,6 @@ Then update the indexer to use `ChromaClient`.
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 20+
 - Anthropic API key (`ANTHROPIC_API_KEY`)
 - ~100MB disk for dependencies

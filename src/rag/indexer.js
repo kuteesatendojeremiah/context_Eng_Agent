@@ -11,6 +11,11 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+function getIndexPath() {
+  const baseDir = process.env.VERCEL ? "/tmp" : process.cwd();
+  return path.join(baseDir, ".code_index.json");
+}
+
 // ── Simple AST-like chunker (no native tree-sitter binding needed) ──────────
 function chunkByFunctions(code, filePath) {
   const chunks = [];
@@ -128,7 +133,7 @@ export async function indexRepository(repoPath, options = {}) {
   console.log(`🔪 [Indexer] Created ${allChunks.length} code chunks`);
 
   // Save index to JSON (ChromaDB substitute that works without running server)
-  const indexPath = path.join(process.cwd(), ".code_index.json");
+  const indexPath = getIndexPath();
   const indexData = {
     created: new Date().toISOString(),
     repo: repoPath,
@@ -143,7 +148,7 @@ export async function indexRepository(repoPath, options = {}) {
 
 // ── Semantic Search via Claude ────────────────────────────────────────────────
 export async function searchCodebase(query, topK = 5) {
-  const indexPath = path.join(process.cwd(), ".code_index.json");
+  const indexPath = getIndexPath();
 
   if (!fs.existsSync(indexPath)) {
     console.warn("⚠️  No code index found. Run indexer first.");

@@ -4,6 +4,9 @@
   "description": "Multi-Agent LLM Code Assistant with Context Engineering",
   "type": "module",
   "main": "src/ui/server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/ui/server.js",   
     "cli": "node src/index.js",     

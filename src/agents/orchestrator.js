@@ -34,8 +34,9 @@ function loadProjectContext(repoPath) {
 
 // ── Orchestrator State Machine ────────────────────────────────────────────────
 export class Orchestrator {
-  constructor(repoPath) {
+  constructor(repoPath, options = {}) {
     this.repoPath = repoPath || process.env.REPO_PATH || "./sample_repo";
+    this.runtimeRoot = options.runtimeRoot || process.env.RUNTIME_ROOT || (process.env.VERCEL ? "/tmp/context-eng-agent" : process.cwd());
     this.projectContext = loadProjectContext(this.repoPath);
     this.sessionLog = [];
     this.totalTokens = 0;
@@ -170,8 +171,9 @@ ${taskSpec.requirements?.join("\n") || ""}
       results.previewHtml = previewHtml;
 
       // Save preview file
-      fs.mkdirSync("./previews", { recursive: true });
-      const previewPath = `./previews/preview_${Date.now()}.html`;
+      const previewsDir = path.join(this.runtimeRoot, "previews");
+      fs.mkdirSync(previewsDir, { recursive: true });
+      const previewPath = path.join(previewsDir, `preview_${Date.now()}.html`);
       fs.writeFileSync(previewPath, previewHtml);
       results.previewPath = previewPath;
       this.log("phase9", `Preview saved: ${previewPath}`);
@@ -188,6 +190,7 @@ ${taskSpec.requirements?.join("\n") || ""}
       agentsUsed: agentResults.length + 3, // planner + reviewer + tester
       stepsCompleted: agentResults.length,
     };
+    results.phaseLogs = this.sessionLog;
 
     console.log("\n" + "═".repeat(60));
     console.log("✅ PIPELINE COMPLETE");
@@ -218,6 +221,7 @@ ${taskSpec.requirements?.join("\n") || ""}
 
   // ── Save session report ───────────────────────────────────────────────────
   saveReport(results, outputPath = "./agent_report.json") {
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, JSON.stringify(results, null, 2));
     console.log(`📄 Report saved to: ${outputPath}`);
     return outputPath;

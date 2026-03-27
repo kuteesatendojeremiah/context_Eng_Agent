@@ -830,7 +830,6 @@ e.g. Add input validation to the user registration form"></textarea>
 
 <script>
   let sessionId = null;
-  let eventSource = null;
   const phaseMap = { phase1:1, phase2:2, phase3:3, phase4:4, phase5:5, phase6:6, phase7:7, phase8:8, phase9:9 };
 
   function setExample(el) {
@@ -886,7 +885,7 @@ e.g. Add input validation to the user registration form"></textarea>
     const iframe = document.getElementById('previewIframe');
     const url = `/preview/${previewPath.split('/').pop()}`;
     iframe.src = url;
-    document.getElementById('previewUrl').textContent = `localhost:3000${url}`;
+    document.getElementById('previewUrl').textContent = `${window.location.origin}${url}`;
     document.getElementById('previewOpenBtn').href = url;
     // Auto-switch to preview tab
     switchTab('preview');
@@ -920,62 +919,46 @@ e.g. Add input validation to the user registration form"></textarea>
       el.querySelector('.agent-status').textContent = 'idle';
     });
 
-    // Start SSE stream
-    if (eventSource) eventSource.close();
-    eventSource = new EventSource(`/api/stream/${sessionId}`);
+    try {
+      addLog('info', 'Running pipeline. This can take up to a minute on serverless...');
+      const res = await fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task, repoPath, sessionId })
+      });
 
-    eventSource.addEventListener('phase', e => {
-      const { phase, message } = JSON.parse(e.data);
-      addLog(phase || 'info', message);
-      if (phase) updatePipeline(phase);
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Run failed');
 
-      // Map phases to agents
-      if (phase === 'phase5') updateAgent('planner', 'active');
-      if (phase === 'phase6') { updateAgent('planner', 'done'); updateAgent('backend', 'active'); updateAgent('frontend', 'active'); }
-      if (phase === 'phase7') { updateAgent('backend', 'done'); updateAgent('frontend', 'done'); updateAgent('reviewer', 'active'); }
-      if (phase === 'phase8') { updateAgent('reviewer', 'done'); updateAgent('tester', 'active'); }
-      if (phase === 'phase9') {
-        updateAgent('tester', 'done');
-        updateAgent('preview', 'active');
-        document.getElementById('previewLoading').style.display = 'block';
-        document.getElementById('previewEmpty').style.display = 'none';
-      }
-    });
+      const results = payload.results;
+      const logs = results.phaseLogs || [];
+      logs.forEach(({ phase, message }) => {
+        addLog(phase || 'info', message || '...');
+        if (phase) updatePipeline(phase);
+      });
 
-    eventSource.addEventListener('complete', e => {
-      const { results } = JSON.parse(e.data);
-      updateAgent('preview', 'done');
+      updateAgent('planner', 'done');
+      updateAgent('frontend', 'done');
+      updateAgent('backend', 'done');
+      updateAgent('reviewer', 'done');
+      updateAgent('tester', 'done');
+      updateAgent('preview', results.previewPath ? 'done' : 'idle');
+
       for (let i = 1; i <= 9; i++) {
         const node = document.getElementById(`pipe-${i}`);
         if (node) { node.classList.remove('active'); node.classList.add('done'); }
       }
+
       addLog('complete', `✅ Pipeline complete! ${results.steps} steps executed in ${results.meta?.duration}`);
       showResults(results);
-      document.getElementById('runBtn').disabled = false;
-      document.getElementById('runningIndicator').style.display = 'none';
-      eventSource.close();
       loadReports();
-      // Show preview if available
-      if (results.previewPath) {
-        showPreview(results.previewPath);
-      }
-    });
-
-    eventSource.addEventListener('error', e => {
-      try {
-        const { message } = JSON.parse(e.data);
-        addLog('error', `❌ Error: ${message}`);
-      } catch { addLog('error', 'Connection error'); }
+      if (results.previewPath) showPreview(results.previewPath);
+    } catch (e) {
+      addLog('error', `❌ Error: ${e.message}`);
+    } finally {
       document.getElementById('runBtn').disabled = false;
       document.getElementById('runningIndicator').style.display = 'none';
-    });
-
-    // Start the run
-    await fetch('/api/run', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task, repoPath, sessionId })
-    });
+    }
   }
 
   function showResults(results) {
