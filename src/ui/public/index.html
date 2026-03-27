@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context-Engineered Multi-Agent Code Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --surface3: #1c2333;
+    --border: #21262d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #f78166;
+    --accent4: #d2a8ff;
+    --accent5: #ffa657;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --glow: rgba(88,166,255,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent4));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .paper-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── Pipeline viz ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 20px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pipeline::-webkit-scrollbar { display: none; }
+
+  .pipe-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .pipe-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    min-width: 100px;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .pipe-node.active {
+    border-color: var(--accent);
+    background: rgba(88,166,255,0.08);
+    box-shadow: 0 0 20px rgba(88,166,255,0.15);
+  }
+
+  .pipe-node.done {
+    border-color: var(--accent2);
+    background: rgba(63,185,80,0.06);
+  }
+
+  .pipe-node.error {
+    border-color: var(--accent3);
+    background: rgba(247,129,102,0.06);
+  }
+
+  .pipe-icon { font-size: 1.3rem; }
+
+  .pipe-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text2);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .pipe-connector {
+    width: 24px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .pipe-connector::after {
+    content: '▶';
+    position: absolute;
+    right: -6px;
+    top: -7px;
+    font-size: 0.6rem;
+    color: var(--text3);
+  }
+
+  /* ── Main layout ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    padding: 20px 0;
+  }
+
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Input panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+  }
+
+  .panel-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text2);
+  }
+
+  .panel-body { padding: 18px; }
+
+  .field-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--glow);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--glow);
+  }
+
+  .form-row { margin-bottom: 16px; }
+
+  .examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .example-chip {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(88,166,255,0.08);
+    border: 1px solid rgba(88,166,255,0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .example-chip:hover {
+    background: rgba(88,166,255,0.15);
+    border-color: var(--accent);
+  }
+
+  .btn-run {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .btn-run:hover:not(:disabled) {
+    background: #79b8ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(88,166,255,0.4);
+  }
+
+  .btn-run:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--text2);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-secondary:hover { border-color: var(--text2); color: var(--text); }
+
+  /* ── Log / Output ── */
+  .log-area {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.8;
+    padding: 16px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 10px;
+    padding: 2px 0;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .log-time { color: var(--text3); flex-shrink: 0; }
+  .log-phase {
+    flex-shrink: 0;
+    padding: 0 6px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .log-phase.phase1 { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .log-phase.phase2 { background: rgba(210,168,255,0.15); color: var(--accent4); }
+  .log-phase.phase3 { background: rgba(255,166,87,0.15); color: var(--accent5); }
+  .log-phase.phase4 { background: rgba(63,185,80,0.15); color: var(--accent2); }
+  .log-phase.phase5 { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .log-phase.phase6 { background: rgba(247,129,102,0.15); color: var(--accent3); }
+  .log-phase.phase7 { background: rgba(210,168,255,0.15); color: var(--accent4); }
+  .log-phase.phase8 { background: rgba(63,185,80,0.15); color: var(--accent2); }
+  .log-msg { color: var(--text2); }
+
+  .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Results ── */
+  .result-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  .result-card-header {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .result-card-header:hover { background: var(--surface3); }
+
+  .result-card-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .result-card-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--surface3);
+    color: var(--text2);
+  }
+
+  .result-card-body {
+    padding: 14px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .result-card-body.open { display: block; }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.6;
+    color: var(--text2);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text3);
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .empty-state .es-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+  /* ── Sidebar ── */
+  .sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+  .agent-list { display: flex; flex-direction: column; gap: 6px; padding: 14px; }
+
+  .agent-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    transition: background 0.15s;
+  }
+
+  .agent-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text3);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+
+  .agent-item.active .agent-dot {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 1s infinite;
+  }
+
+  .agent-item.done .agent-dot { background: var(--accent2); }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+  }
+
+  .agent-name { flex: 1; color: var(--text2); }
+  .agent-item.active .agent-name { color: var(--text); font-weight: 600; }
+
+  .agent-status {
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text3);
+  }
+
+  .reports-list { display: flex; flex-direction: column; gap: 4px; padding: 12px; max-height: 200px; overflow-y: auto; }
+
+  .report-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text2);
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .report-item:hover { background: var(--surface2); color: var(--accent); }
+
+  .status-ok { color: var(--accent2); }
+  .status-err { color: var(--accent3); }
+
+  /* ── Tab buttons ── */
+  .tab-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { border-color: var(--text2); color: var(--text); }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">🤖</div>
+      <div>
+        <h1>Context<span>Eng</span> Agent</h1>
+        <div class="subtitle">Multi-Agent LLM Code Assistant</div>
+      </div>
+      <div class="paper-badge">arXiv:2508.08322</div>
+    </div>
+  </header>
+
+  <!-- Pipeline visualization -->
+  <div class="pipeline" id="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-1">
+        <span class="pipe-icon">🧠</span>
+        <span class="pipe-label">Intent<br>Translator</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-2">
+        <span class="pipe-icon">🔍</span>
+        <span class="pipe-label">Knowledge<br>Retrieval</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-3">
+        <span class="pipe-icon">📚</span>
+        <span class="pipe-label">Knowledge<br>Synthesis</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-4">
+        <span class="pipe-icon">🗄️</span>
+        <span class="pipe-label">RAG Code<br>Index</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-5">
+        <span class="pipe-icon">📋</span>
+        <span class="pipe-label">Planning</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-6">
+        <span class="pipe-icon">⚡</span>
+        <span class="pipe-label">Agent<br>Delegation</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-7">
+        <span class="pipe-icon">🔍</span>
+        <span class="pipe-label">Code<br>Review</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-8">
+        <span class="pipe-icon">🧪</span>
+        <span class="pipe-label">Test<br>Generation</span>
+      </div>
+      <div class="pipe-connector"></div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-node" id="pipe-9">
+        <span class="pipe-icon">🖼️</span>
+        <span class="pipe-label">Live<br>Preview</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Left: Input + Output -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <!-- Input panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>⌨️</span>
+          <span class="panel-title">Task Input</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-row">
+            <label class="field-label">Task Description</label>
+            <textarea id="taskInput" placeholder="Describe what you want to build or fix...
+e.g. Add input validation to the user registration form"></textarea>
+            <div class="examples">
+              <span class="example-chip" onclick="setExample(this)">Build a clothing brand website</span>
+              <span class="example-chip" onclick="setExample(this)">Create a restaurant landing page</span>
+              <span class="example-chip" onclick="setExample(this)">Add form validation</span>
+              <span class="example-chip" onclick="setExample(this)">Create user profile API endpoint</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="field-label">Repository Path (optional)</label>
+            <input type="text" id="repoPath" placeholder="./sample_repo" value="./sample_repo">
+          </div>
+          <button class="btn-run" id="runBtn" onclick="runAgent()">
+            <span>▶</span> Run Multi-Agent Pipeline
+          </button>
+          <button class="btn-secondary" onclick="indexRepo()">🗄️ Re-index Repository</button>
+        </div>
+      </div>
+
+      <!-- Log panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>📡</span>
+          <span class="panel-title">Live Progress</span>
+          <span id="runningIndicator" style="margin-left:auto;display:none">
+            <span class="spinner"></span>
+          </span>
+        </div>
+        <div class="log-area" id="logArea">
+          <div class="empty-state">
+            <div class="es-icon">🤖</div>
+            Pipeline output will appear here
+          </div>
+        </div>
+      </div>
+
+      <!-- Results panel -->
+      <div class="panel" id="resultsPanel" style="display:none">
+        <div class="panel-header">
+          <span>✅</span>
+          <span class="panel-title">Results</span>
+          <!-- Tab switcher -->
+          <div style="margin-left:auto;display:flex;gap:4px;">
+            <button class="tab-btn active" id="tabCode" onclick="switchTab('code')">📄 Code</button>
+            <button class="tab-btn" id="tabPreview" onclick="switchTab('preview')" id="tabPreview">🖼️ Preview</button>
+          </div>
+        </div>
+        <!-- Code tab -->
+        <div id="codeTab" class="panel-body">
+          <div class="stats-bar" id="statsBar"></div>
+          <div id="resultsContent"></div>
+        </div>
+        <!-- Preview tab -->
+        <div id="previewTab" style="display:none">
+          <div id="previewLoading" style="text-align:center;padding:40px;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.8rem;display:none">
+            <div class="spinner" style="margin:0 auto 16px;width:24px;height:24px;border-width:3px"></div>
+            Building live preview...
+          </div>
+          <div id="previewEmpty" style="text-align:center;padding:40px;color:var(--text3);font-size:0.8rem;font-family:'JetBrains Mono',monospace">
+            Preview will appear here after the pipeline runs
+          </div>
+          <div id="previewFrame" style="display:none">
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border)">
+              <div style="display:flex;gap:5px">
+                <div style="width:10px;height:10px;border-radius:50%;background:#ff5f56"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#ffbd2e"></div>
+                <div style="width:10px;height:10px;border-radius:50%;background:#27c93f"></div>
+              </div>
+              <div style="flex:1;background:var(--surface3);border-radius:4px;padding:4px 12px;font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3)" id="previewUrl">preview://localhost</div>
+              <a id="previewOpenBtn" href="#" target="_blank" style="font-size:0.7rem;color:var(--accent);text-decoration:none;font-family:'JetBrains Mono',monospace">↗ Open</a>
+            </div>
+            <iframe id="previewIframe" style="width:100%;height:600px;border:none;background:#fff" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar -->
+    <div class="sidebar">
+
+      <!-- Agent status -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>🤖</span>
+          <span class="panel-title">Agents</span>
+        </div>
+        <div class="agent-list" id="agentList">
+          <div class="agent-item" data-role="planner">
+            <div class="agent-dot"></div>
+            <span class="agent-name">📋 Planner</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="frontend">
+            <div class="agent-dot"></div>
+            <span class="agent-name">🎨 Frontend</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="backend">
+            <div class="agent-dot"></div>
+            <span class="agent-name">⚙️ Backend</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="devops">
+            <div class="agent-dot"></div>
+            <span class="agent-name">🚀 DevOps</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="reviewer">
+            <div class="agent-dot"></div>
+            <span class="agent-name">🔍 Reviewer</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="tester">
+            <div class="agent-dot"></div>
+            <span class="agent-name">🧪 Tester</span>
+            <span class="agent-status">idle</span>
+          </div>
+          <div class="agent-item" data-role="preview">
+            <div class="agent-dot"></div>
+            <span class="agent-name">🖼️ Preview Builder</span>
+            <span class="agent-status">idle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Architecture reference -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>🗺️</span>
+          <span class="panel-title">Component Map</span>
+        </div>
+        <div class="panel-body" style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;line-height:2;color:var(--text2)">
+          <div><span style="color:var(--accent)">GPT-5</span> → Claude Opus</div>
+          <div><span style="color:var(--accent4)">Elicit</span> → Web Search API</div>
+          <div><span style="color:var(--accent5)">NotebookLM</span> → Claude Synthesis</div>
+          <div><span style="color:var(--accent2)">Zilliz/Chroma</span> → Local JSON Index</div>
+          <div><span style="color:var(--accent3)">Claude Code</span> → Claude API Agents</div>
+        </div>
+      </div>
+
+      <!-- Past reports -->
+      <div class="panel">
+        <div class="panel-header">
+          <span>📄</span>
+          <span class="panel-title">Past Reports</span>
+        </div>
+        <div class="reports-list" id="reportsList">
+          <div style="color:var(--text3);font-size:0.7rem;padding:8px;font-family:'JetBrains Mono',monospace">No reports yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let sessionId = null;
+  let eventSource = null;
+  const phaseMap = { phase1:1, phase2:2, phase3:3, phase4:4, phase5:5, phase6:6, phase7:7, phase8:8, phase9:9 };
+
+  function setExample(el) {
+    document.getElementById('taskInput').value = el.textContent;
+  }
+
+  function addLog(phase, message) {
+    const logArea = document.getElementById('logArea');
+    if (logArea.querySelector('.empty-state')) logArea.innerHTML = '';
+    const time = new Date().toLocaleTimeString('en', { hour12: false });
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <span class="log-time">${time}</span>
+      <span class="log-phase ${phase}">${phase}</span>
+      <span class="log-msg">${message}</span>
+    `;
+    logArea.appendChild(entry);
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  function updatePipeline(phase) {
+    const pNum = phaseMap[phase];
+    if (!pNum) return;
+    for (let i = 1; i <= 9; i++) {
+      const node = document.getElementById(`pipe-${i}`);
+      if (!node) continue;
+      node.classList.remove('active', 'done');
+      if (i < pNum) node.classList.add('done');
+      else if (i === pNum) node.classList.add('active');
+    }
+  }
+
+  function updateAgent(role, status) {
+    const item = document.querySelector(`.agent-item[data-role="${role}"]`);
+    if (!item) return;
+    item.classList.remove('active', 'done');
+    item.classList.add(status);
+    item.querySelector('.agent-status').textContent = status;
+  }
+
+  function switchTab(tab) {
+    document.getElementById('codeTab').style.display = tab === 'code' ? 'block' : 'none';
+    document.getElementById('previewTab').style.display = tab === 'preview' ? 'block' : 'none';
+    document.getElementById('tabCode').classList.toggle('active', tab === 'code');
+    document.getElementById('tabPreview').classList.toggle('active', tab === 'preview');
+  }
+
+  function showPreview(previewPath) {
+    document.getElementById('previewEmpty').style.display = 'none';
+    document.getElementById('previewLoading').style.display = 'none';
+    document.getElementById('previewFrame').style.display = 'block';
+    const iframe = document.getElementById('previewIframe');
+    const url = `/preview/${previewPath.split('/').pop()}`;
+    iframe.src = url;
+    document.getElementById('previewUrl').textContent = `localhost:3000${url}`;
+    document.getElementById('previewOpenBtn').href = url;
+    // Auto-switch to preview tab
+    switchTab('preview');
+    // Flash the preview tab button
+    const btn = document.getElementById('tabPreview');
+    btn.style.background = 'var(--accent2)';
+    btn.style.color = '#000';
+    setTimeout(() => { btn.style.background = ''; btn.style.color = ''; }, 1500);
+  }
+
+  async function runAgent() {
+    const task = document.getElementById('taskInput').value.trim();
+    const repoPath = document.getElementById('repoPath').value.trim();
+    if (!task) { alert('Please enter a task description'); return; }
+
+    sessionId = `session_${Date.now()}`;
+    document.getElementById('runBtn').disabled = true;
+    document.getElementById('runningIndicator').style.display = 'block';
+    document.getElementById('resultsPanel').style.display = 'none';
+    document.getElementById('logArea').innerHTML = '';
+    document.getElementById('previewEmpty').style.display = 'block';
+    document.getElementById('previewFrame').style.display = 'none';
+
+    // Reset pipeline and agents
+    for (let i = 1; i <= 9; i++) {
+      const node = document.getElementById(`pipe-${i}`);
+      if (node) node.classList.remove('active', 'done', 'error');
+    }
+    document.querySelectorAll('.agent-item').forEach(el => {
+      el.classList.remove('active', 'done');
+      el.querySelector('.agent-status').textContent = 'idle';
+    });
+
+    // Start SSE stream
+    if (eventSource) eventSource.close();
+    eventSource = new EventSource(`/api/stream/${sessionId}`);
+
+    eventSource.addEventListener('phase', e => {
+      const { phase, message } = JSON.parse(e.data);
+      addLog(phase || 'info', message);
+      if (phase) updatePipeline(phase);
+
+      // Map phases to agents
+      if (phase === 'phase5') updateAgent('planner', 'active');
+      if (phase === 'phase6') { updateAgent('planner', 'done'); updateAgent('backend', 'active'); updateAgent('frontend', 'active'); }
+      if (phase === 'phase7') { updateAgent('backend', 'done'); updateAgent('frontend', 'done'); updateAgent('reviewer', 'active'); }
+      if (phase === 'phase8') { updateAgent('reviewer', 'done'); updateAgent('tester', 'active'); }
+      if (phase === 'phase9') {
+        updateAgent('tester', 'done');
+        updateAgent('preview', 'active');
+        document.getElementById('previewLoading').style.display = 'block';
+        document.getElementById('previewEmpty').style.display = 'none';
+      }
+    });
+
+    eventSource.addEventListener('complete', e => {
+      const { results } = JSON.parse(e.data);
+      updateAgent('preview', 'done');
+      for (let i = 1; i <= 9; i++) {
+        const node = document.getElementById(`pipe-${i}`);
+        if (node) { node.classList.remove('active'); node.classList.add('done'); }
+      }
+      addLog('complete', `✅ Pipeline complete! ${results.steps} steps executed in ${results.meta?.duration}`);
+      showResults(results);
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('runningIndicator').style.display = 'none';
+      eventSource.close();
+      loadReports();
+      // Show preview if available
+      if (results.previewPath) {
+        showPreview(results.previewPath);
+      }
+    });
+
+    eventSource.addEventListener('error', e => {
+      try {
+        const { message } = JSON.parse(e.data);
+        addLog('error', `❌ Error: ${message}`);
+      } catch { addLog('error', 'Connection error'); }
+      document.getElementById('runBtn').disabled = false;
+      document.getElementById('runningIndicator').style.display = 'none';
+    });
+
+    // Start the run
+    await fetch('/api/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task, repoPath, sessionId })
+    });
+  }
+
+  function showResults(results) {
+    const panel = document.getElementById('resultsPanel');
+    panel.style.display = 'block';
+
+    // Stats
+    document.getElementById('statsBar').innerHTML = `
+      <div class="stat"><div class="stat-value">${results.steps || 0}</div><div class="stat-label">Steps</div></div>
+      <div class="stat"><div class="stat-value">${results.meta?.agentsUsed || 0}</div><div class="stat-label">Agents</div></div>
+      <div class="stat"><div class="stat-value">${results.meta?.duration || '—'}</div><div class="stat-label">Duration</div></div>
+      <div class="stat"><div class="stat-value">${Math.round((results.meta?.totalTokens || 0)/1000)}k</div><div class="stat-label">Tokens</div></div>
+    `;
+
+    const content = document.getElementById('resultsContent');
+    content.innerHTML = '';
+
+    // Task spec card
+    addResultCard(content, '📋 Task Specification', `Task: ${results.title || '—'}`, 'task');
+
+    // Agent outputs
+    if (results.agentOutputs) {
+      results.agentOutputs.forEach(ao => {
+        addResultCard(content, `${getRoleEmoji(ao.role)} Step ${ao.step}: ${ao.description}`, ao.output, ao.role, true);
+      });
+    }
+
+    // Review
+    if (results.reviewSummary) {
+      addResultCard(content, '🔍 Code Review', results.reviewSummary, 'review', true);
+    }
+
+    // Tests
+    if (results.tests) {
+      addResultCard(content, '🧪 Generated Tests', results.tests, 'tests', true);
+    }
+
+    panel.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function addResultCard(container, title, content, badge, collapsed = false) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.innerHTML = `
+      <div class="result-card-header" onclick="toggleCard(this)">
+        <span class="result-card-title">${title}</span>
+        <span class="result-card-badge">${badge}</span>
+        <span style="color:var(--text3);font-size:0.7rem">${collapsed ? '▼' : '▲'}</span>
+      </div>
+      <div class="result-card-body ${collapsed ? '' : 'open'}">
+        <pre>${escapeHtml(content || '—')}</pre>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+
+  function toggleCard(header) {
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+    header.querySelector('span:last-child').textContent = body.classList.contains('open') ? '▲' : '▼';
+  }
+
+  function getRoleEmoji(role) {
+    const map = { planner:'📋', frontend:'🎨', backend:'⚙️', devops:'🚀', reviewer:'🔍', tester:'🧪' };
+    return map[role] || '🤖';
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function indexRepo() {
+    const repoPath = document.getElementById('repoPath').value.trim();
+    addLog('info', `Indexing ${repoPath}...`);
+    const res = await fetch('/api/index', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ repoPath })
+    });
+    const data = await res.json();
+    if (data.success) {
+      addLog('info', `✅ Indexed ${data.chunksIndexed} code chunks`);
+    } else {
+      addLog('error', `❌ Index failed: ${data.error}`);
+    }
+  }
+
+  async function loadReports() {
+    const res = await fetch('/api/reports');
+    const reports = await res.json();
+    const list = document.getElementById('reportsList');
+    if (reports.length === 0) {
+      list.innerHTML = '<div style="color:var(--text3);font-size:0.7rem;padding:8px;font-family:\'JetBrains Mono\',monospace">No reports yet</div>';
+      return;
+    }
+    list.innerHTML = reports.map(r => `
+      <div class="report-item" onclick="viewReport('${r.file}')">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.title || r.file}</span>
+        <span class="status-ok">${r.meta?.duration || ''}</span>
+      </div>
+    `).join('');
+  }
+
+  async function viewReport(file) {
+    const res = await fetch(`/api/reports/${file}`);
+    const data = await res.json();
+    if (data.taskSpec) {
+      showResults({
+        title: data.taskSpec.title,
+        steps: data.agentResults?.length,
+        meta: data.meta,
+        reviewSummary: data.review?.result?.slice(0, 800),
+        agentOutputs: data.agentResults?.map(ar => ({
+          step: ar.step.id, role: ar.agentResult.role,
+          description: ar.step.description, output: ar.agentResult.result
+        })),
+        tests: data.tests?.result,
+        previewPath: data.previewPath
+      });
+      if (data.previewPath) showPreview(data.previewPath);
+    }
+  }
+
+  // Load reports on start
+  loadReports();
+</script>
+</body>
+</html>

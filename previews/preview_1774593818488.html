@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeTime - Premium Watch Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxury: {
+                            50: '#f8f6f0',
+                            500: '#d4af37',
+                            600: '#b8941f',
+                        },
+                        watch: {
+                            black: '#1a1a1a',
+                            silver: '#c0c0c0',
+                            gold: '#ffd700',
+                        }
+                    },
+                    fontFamily: {
+                        'luxury': ['Playfair Display', 'serif'],
+                        'modern': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .luxury-gradient {
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .watch-shadow {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="font-modern bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-sm shadow-sm fixed w-full top-0 z-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 luxury-gradient rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            <path d="M12 6v6l3 3"/>
+                        </svg>
+                    </div>
+                    <span class="font-luxury text-xl font-bold text-slate-800">LuxeTime</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-slate-600 hover:text-luxury-600 transition-colors">Collections</a>
+                    <a href="#" class="text-slate-600 hover:text-luxury-600 transition-colors">Brands</a>
+                    <a href="#" class="text-slate-600 hover:text-luxury-600 transition-colors">About</a>
+                    <a href="#" class="text-slate-600 hover:text-luxury-600 transition-colors">Contact</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 text-slate-600 hover:text-luxury-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                    <button class="p-2 text-slate-600 hover:text-luxury-600 transition-colors relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10v6a1 1 0 001 1h8a1 1 0 001-1v-6M9 19h6"/>
+                        </svg>
+                        <span class="absolute -top-1 -right-1 bg-luxury-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">2</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-20 pb-16 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="absolute top-0 right-0 w-96 h-96 bg-luxury-500/10 rounded-full blur-3xl"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-fade-in">
+                    <h1 class="font-luxury text-5xl lg:text-6xl font-bold mb-6">
+                        Timeless
+                        <span class="text-transparent bg-clip-text luxury-gradient block">Elegance</span>
+                    </h1>
+                    <p class="text-xl text-slate-300 mb-8 leading-relaxed">
+                        Discover our curated collection of the world's finest timepieces. From Swiss craftsmanship to innovative design, each watch tells a story of precision and luxury.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button class="bg-luxury-600 hover:bg-luxury-500 text-white px-8 py-3 rounded-lg font-medium transition-all transform hover:scale-105">
+                            Explore Collection
+                        </button>
+                        <button class="border border-white/30 hover:border-luxury-500 text-white px-8 py-3 rounded-lg font-medium transition-all">
+                            Watch Our Story
+                        </button>
+                    </div>
+                </div>
+                <div class="relative animate-slide-up">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1523170335258-f5c51c2344af?w=600&h=400&fit=crop" 
+                             alt="Luxury Watch" 
+                             class="rounded-2xl watch-shadow w-full max-w-md mx-auto">
+                        <div class="absolute -bottom-6 -right-6 bg-luxury-500 text-white p-4 rounded-xl watch-shadow">
+                            <div class="text-2xl font-bold">$12,500</div>
+                            <div class="text-sm opacity-90">Swiss Made</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-luxury text-4xl font-bold text-slate-800 mb-4">Premium Collections</h2>
+                <p class="text-slate-600 text-lg">Handpicked timepieces from world-renowned manufacturers</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 p-8 h-80 flex flex-col justify-between transform transition-all duration-300 group-hover:scale-105 watch-shadow">
+                        <div>
+                            <h3 class="font-luxury text-2xl font-bold text-white mb-2">Swiss Heritage</h3>
+                            <p class="text-slate-300">Precision crafted timepieces from Switzerland's finest workshops</p>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div class="text-luxury-500 font-bold">From $8,500</div>
+                            <img src="https://images.unsplash.com/photo-1548164032-eda3a83e4003?w=100&h=100&fit=crop" 
+                                 alt="Swiss Watch" 
+                                 class="w-16 h-16 rounded-full object-cover border-2 border-luxury-500">
+                        </div>
+                        <div class="absolute top-4 right-4 bg-luxury-500 text-white px-2 py-1 rounded-full text-sm font-medium">
+                            New
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 p-8 h-80 flex flex-col justify-between transform transition-all duration-300 group-hover:scale-105 watch-shadow">
+                        <div>
+                            <h3 class="font-luxury text-2xl font-bold text-white mb-2">Sport Edition</h3>
+                            <p class="text-slate-300">High-performance watches built for the active lifestyle</p>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div class="text-luxury-500 font-bold">From $3,200</div>
+                            <img src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=100&h=100&fit=crop" 
+                                 alt="Sport Watch" 
+                                 class="w-16 h-16 rounded-full object-cover border-2 border-luxury-500">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group cursor-pointer">
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-600 to-slate-700 p-8 h-80 flex flex-col justify-between transform transition-all duration-300 group-hover:scale-105 watch-shadow">
+                        <div>
+                            <h3 class="font-luxury text-2xl font-bold text-white mb-2">Limited Edition</h3>
+                            <p class="text-slate-300">Exclusive timepieces with rare materials and unique designs</p>
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <div class="text-luxury-500 font-bold">From $25,000</div>
+                            <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=100&h=100&fit=crop" 
+                                 alt="Limited Edition Watch" 
+                                 class="w-16 h-16 rounded-full object-cover border-2 border-luxury-500">
+                        </div>
+                        <div class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-sm font-medium">
+                            Rare
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="font-luxury text-4xl font-bold text-slate-800 mb-4">Featured Timepieces</h2>
+                <p class="text-slate-600 text-lg">Discover our most coveted watches</p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="group cursor-pointer">
+                    <div class="bg-white rounded-2xl overflow-hidden watch-shadow group-hover:shadow-2xl transition-all duration-300">
+                        <div class="aspect-square overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1523170335258-f5c51c2344af?w=400&h=400&fit=crop" 
+                                 alt="Luxury Watch 1" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-luxury-600 text-sm font-medium">ROLEX</span>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                            <h3 class="font-luxury text-lg font-semibold text-slate-800 mb-2">Submariner Date</h3>
+                            <p class="text-slate-600 text-sm mb-4">Waterproof to 300m with ceramic bezel</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xl text-slate-800">$12,500</span>
+                                <button class="bg-luxury-500 hover:bg-luxury-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group cursor-pointer">
+                    <div class="bg-white rounded-2xl overflow-hidden watch-shadow group-hover:shadow-2xl transition-all duration-300">
+                        <div class="aspect-square overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1548164032-eda3a83e4003?w=400&h=400&fit=crop" 
+                                 alt="Luxury Watch 2" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-luxury-600 text-sm font-medium">OMEGA</span>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                            <h3 class="font-luxury text-lg font-semibold text-slate-800 mb-2">Speedmaster</h3>
+                            <p class="text-slate-600 text-sm mb-4">Moonwatch Professional Chronograph</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xl text-slate-800">$6,350</span>
+                                <button class="bg-luxury-500 hover:bg-luxury-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group cursor-pointer">
+                    <div class="bg-white rounded-2xl overflow-hidden watch-shadow group-hover:shadow-2xl transition-all duration-300">
+                        <div class="aspect-square overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=400&h=400&fit=crop" 
+                                 alt="Luxury Watch 3" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-luxury-600 text-sm font-medium">TAG HEUER</span>
+                                <div class="flex text-yellow-400">
+                                    ★★★★☆
+                                </div>
+                            </div>
+                            <h3 class="font-luxury text-lg font-semibold text-slate-800 mb-2">Monaco Gulf</h3>
+                            <p class="text-slate-600 text-sm mb-4">Limited racing heritage edition</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xl text-slate-800">$5,900</span>
+                                <button class="bg-luxury-500 hover:bg-luxury-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group cursor-pointer">
+                    <div class="bg-white rounded-2xl overflow-hidden watch-shadow group-hover:shadow-2xl transition-all duration-300">
+                        <div class="aspect-square overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=400&h=400&fit=crop" 
+                                 alt="Luxury Watch 4" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-luxury-600 text-sm font-medium">PATEK PHILIPPE</span>
+                                <div class="flex text-yellow-400">
+                                    ★★★★★
+                                </div>
+                            </div>
+                            <h3 class="font-luxury text-lg font-semibold text-slate-800 mb-2">Calatrava</h3>
+                            <p class="text-slate-600 text-sm mb-4">Rose gold with leather strap</p>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xl text-slate-800">$32,000</span>
+                                <button class="bg-luxury-500 hover:bg-luxury-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-slate-800">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-luxury text-3xl font-bold text-white mb-4">Stay Updated</h2>
+            <p class="text-slate-300 mb-8">Be the first to know about new arrivals and exclusive offers</p>
+            <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                <input type="email" 
+                       placeholder="Enter your email" 
+                       class="flex-1 px-4 py-3 rounded-lg border border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:border-luxury-500">
+                <button class="bg-luxury-500 hover:bg-luxury-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Subscribe
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-8 h-8 luxury-gradient rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                <path d="M12 6v6l3 3"/>
+                            </svg>
+                        </div>
+                        <span class="font-luxury text-xl font-bold">LuxeTime</span>
+                    </div>
+                    <p class="text-slate-400 mb-4">Curating the world's finest timepieces since 1985.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-slate-400 hover:text-luxury-500 transition-colors">Facebook</a>
+                        <a href="#" class="text-slate-400 hover:text-luxury-500 transition-colors">Instagram</a>
+                        <a href="#" class="text-slate-400 hover:text-luxury-500 transition-colors">Twitter</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-luxury text-lg font-semibold mb-4">Collections</h3>
+                    <ul class="space-y-2 text-slate-400">
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Swiss Heritage</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Sport Edition</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Limited Edition</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Vintage</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-luxury text-lg font-semibold mb-4">Customer Care</h3>
+                    <ul class="space-y-2 text-slate-400">
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Returns</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Warranty</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-luxury text-lg font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2 text-slate-400">
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Press</a></li>
+                        <li><a href="#" class="hover:text-luxury-500 transition-colors">Partnerships</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 mt-12 pt-8 text-center text-slate-400">
+                <p>&copy; 2024 LuxeTime. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Built by Multi-Agent System watermark -->
+    <div class="fixed bottom-4 right-4 bg-black/80 text-white text-xs px-3 py-2 rounded-full opacity-60 hover:opacity-100 transition-opacity">
+        Built by Multi-Agent System
+    </div>
+
+    <script>
+        // Simple cart functionality
+        let cart = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add to cart functionality
+            const addToCartButtons = document.querySelectorAll('button');
+            addToCartButtons.forEach(button => {
+                if (button.textContent.includes('Add to Cart')) {
+                    button.addEventListener('click', function() {
+                        const productCard = this.closest('.group');
+                        const productName = productCard.querySelector('h3').textContent;
+                        const productPrice = productCard.querySelector('.font-bold').textContent;
+                        
+                        cart.push({ name: productName, price: productPrice });
+                        
+                        // Update cart badge
+                        const cartBadge = document.querySelector('.bg-luxury-500');
+                        cartBadge.textContent = cart.length;
+                        
+                        // Simple feedback
+                        this.textContent = 'Added!';
+                        this.classList.add('bg-green-500');
+                        setTimeout(() => {
+                            this.textContent = 'Add to Cart';
+                            this.classList.remove('bg-green-500');
+                        }, 1500);
+                    });
+                }
+            });
+            
+            // Newsletter subscription
+            const subscribeButton = document.querySelector('button');
+            const emailInput = document.querySelector('input[type="email"]');
+            
+            if (subscribeButton && subscribeButton.textContent.includes('Subscribe')) {
+                subscribeButton.addEventListener('click', function() {
+                    if (emailInput.value) {
+                        this.textContent = 'Subscribed!';
+                        this.classList.add('bg-green-500');
+                        emailInput.value = '';
+                        setTimeout(() => {
+                            this.textContent = 'Subscribe';
+                            this.classList.remove('bg-green-500');
+                        }, 2000);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

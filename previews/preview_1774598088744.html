@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Auto Sales - Quality Used & New Cars</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-heading {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.9), rgba(59, 130, 246, 0.8)),
+                        url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50" x-data="{ open: false }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-heading font-bold text-blue-600">Premium Auto</h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="#home" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                            <a href="#inventory" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inventory</a>
+                            <a href="#services" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Services</a>
+                            <a href="#financing" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Financing</a>
+                            <a href="#contact" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Schedule Test Drive
+                    </button>
+                </div>
+                <div class="md:hidden">
+                    <button @click="open = !open" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div x-show="open" x-transition class="md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+                <a href="#home" class="text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="#inventory" class="text-gray-500 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Inventory</a>
+                <a href="#services" class="text-gray-500 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="#financing" class="text-gray-500 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Financing</a>
+                <a href="#contact" class="text-gray-500 hover:text-blue-600 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="text-center text-white">
+                <h1 class="text-5xl md:text-6xl font-heading font-bold mb-6">
+                    Find Your Perfect Car
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                    Browse our extensive inventory of quality used and new vehicles with competitive pricing and flexible financing options.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+                        Browse Inventory
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                        Get Pre-Approved
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Bar -->
+    <section class="bg-white py-8 -mt-20 relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-xl p-6" x-data="{ make: '', model: '', priceRange: '', year: '' }">
+                <h2 class="text-2xl font-heading font-bold text-center mb-6">Quick Vehicle Search</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <select x-model="make" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Make</option>
+                        <option value="toyota">Toyota</option>
+                        <option value="honda">Honda</option>
+                        <option value="ford">Ford</option>
+                        <option value="chevrolet">Chevrolet</option>
+                        <option value="nissan">Nissan</option>
+                        <option value="bmw">BMW</option>
+                        <option value="mercedes">Mercedes-Benz</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                    <select x-model="model" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Model</option>
+                        <option value="camry">Camry</option>
+                        <option value="civic">Civic</option>
+                        <option value="f150">F-150</option>
+                        <option value="silverado">Silverado</option>
+                        <option value="altima">Altima</option>
+                    </select>
+                    <select x-model="year" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Year</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                    </select>
+                    <select x-model="priceRange" class="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Price Range</option>
+                        <option value="0-15000">Under $15,000</option>
+                        <option value="15000-25000">$15,000 - $25,000</option>
+                        <option value="25000-35000">$25,000 - $35,000</option>
+                        <option value="35000-50000">$35,000 - $50,000</option>
+                        <option value="50000+">$50,000+</option>
+                    </select>
+                </div>
+                <div class="mt-6 text-center">
+                    <button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors w-full md:w-auto">
+                        Search Vehicles
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Inventory -->
+    <section id="inventory" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold text-gray-900 mb-4">Featured Vehicles</h2>
+                <p class="text-xl text-gray-600">Discover our hand-picked selection of premium vehicles</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Car Card 1 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="2023 BMW 3 Series" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Certified</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50">
+                                <i data-lucide="heart" class="h-5 w-5 text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-heading font-bold text-gray-900 mb-2">2023 BMW 3 Series</h3>
+                        <p class="text-gray-600 mb-4">330i xDrive • 15,432 miles • Automatic</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-3xl font-bold text-blue-600">$42,900</span>
+                            <span class="text-sm text-gray-500">$689/mo*</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Leather</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Sunroof</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">AWD</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                View Details
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i data-lucide="phone" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 2 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="2022 Toyota Camry" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Hot Deal</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50">
+                                <i data-lucide="heart" class="h-5 w-5 text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-heading font-bold text-gray-900 mb-2">2022 Toyota Camry</h3>
+                        <p class="text-gray-600 mb-4">XLE • 22,150 miles • CVT</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-3xl font-bold text-blue-600">$28,500</span>
+                            <span class="text-sm text-gray-500">$459/mo*</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Hybrid</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Navigation</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Backup Cam</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                View Details
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i data-lucide="phone" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Car Card 3 -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover transition-all duration-300">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1494905998402-395d579af36f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="2024 Ford F-150" class="w-full h-48 object-cover">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">New</span>
+                        </div>
+                        <div class="absolute top-4 right-4">
+                            <button class="bg-white p-2 rounded-full shadow-md hover:bg-gray-50">
+                                <i data-lucide="heart" class="h-5 w-5 text-gray-600"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-heading font-bold text-gray-900 mb-2">2024 Ford F-150</h3>
+                        <p class="text-gray-600 mb-4">XLT SuperCrew • 5 miles • Automatic</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-3xl font-bold text-blue-600">$56,900</span>
+                            <span class="text-sm text-gray-500">$899/mo*</span>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">4WD</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">EcoBoost</span>
+                            <span class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">Tow Package</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                View Details
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i data-lucide="phone" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <button class="bg-white border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors">
+                    View All Inventory
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="bg-gray-100 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-heading font-bold text-gray-900 mb-4">Our Services</h2>
+                <p class="text-xl text-gray-600">Complete automotive solutions for all your needs</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <i data-lucide="car" class="h-8 w-8 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4">Vehicle Sales</h3>
+                    <p class="text-gray-600">Quality new and used vehicles with competitive pricing and transparent history reports.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="bg-green-100 rounded-full p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <i data-lucide="credit-card" class="h-8 w-8 text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4">Auto Financing</h3>
+                    <p class="text-gray-600">Flexible financing options with competitive rates for all credit types. Get pre-approved today.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="bg-orange-100 rounded-full p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <i data-lucide="wrench" class="h-8 w-8 text-orange-600"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4">Service & Repair</h3>
+                    <p class="text-gray-600">Full-service automotive repair and maintenance by certified technicians with genuine parts.</p>
+                </div>
+
+                <div class="bg-white rounded-xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="h-8 w-8 text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold mb-4">Extended Warranties</h3>
+                    <p class="text-gray-600">Comprehensive warranty coverage to protect your investment and ensure peace of mind.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financing Section -->
+    <section id="financing" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl font-heading font-bold text-gray-900 mb-6">Easy Auto Financing</h2>
+                    <p class="text-xl text-gray-600 mb-8">Get pre-approved in minutes with our simple online application. We work with multiple lenders to find you the best rates.</p>
+                    
+                    <div class="space-y-6 mb-8">
+                        <div class="flex items-start">
+                            <div class="bg-green-100 rounded-full p-2 mr-4">
+                                <i data-lucide="check" class="h-5 w-5 text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg mb-2">Quick Pre-Approval</h3>
+                                <p class="text-gray-600">Get approved in minutes with our streamlined process</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 rounded-full p-2 mr-4">
+                                <i data-lucide="check" class="h-5 w-5 text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg mb-2">Competitive Rates</h3>
+                                <p class="text-gray-600">Access to multiple lenders for the best possible rates</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-100 rounded-full p-2 mr-4">
+                                <i data-lucide="check" class="h-5 w-5 text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg mb-2">All Credit Types</h3>
+                                <p class="text-gray-600">We work with customers of all credit backgrounds</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Apply for Financing
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-xl p-8">
+                    <h3 class="text-2xl font-heading font-bold mb-6">Payment Calculator</h3>
+                    <div class="space-y-4" x-data="{ price: 30000, downPayment: 5000, term: 60, rate: 4.9 }">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Vehicle Price</label>
+                            <input x-model="price" type="range" min="10000" max="100000" step="1000" class="w-full">
+                            <div class="text-center mt-2 font-semibold">$<span x-text="price.toLocaleString()"></span></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Down Payment</label>
+                            <input x-model="downPayment" type="range" min="0" :max="price * 0.5" step="500" class="w-full">
+                            <div class="text-center mt-2 font-semibold">$<span x-text="downPayment.toLocaleString()"></span></div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Loan Term</label>
+                            <select x-model="term" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="36">36 months</option>
+                                <option value="48">48 months</option>
+                                <option value="60">60 months</option>
+                                <option value="72">72 months</option>
+                            </select>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg text-center">
+                            <div class="text-sm text-gray-600 mb-1">Estimated Monthly Payment</div>
+                            <div class="text-3xl font-bold text-blue-600">$<span x-text="Math.round((price - downPayment) * (rate/100/12) / (1 - Math.pow(1 + rate/100/12, -term)))"></span></div>
+                            <div class="text-xs text-gray-500 mt-1">*Based on <span x-text="rate"></span>% APR</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="bg-gray-900 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div>
+                    <h2 class="text-4xl font-heading font-bold text-white mb-6">Visit Our Showroom</h2>
+                    <p class="text-xl text-gray-300 mb-8">Come see our vehicles in person and take a test drive today.</p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 rounded-full p-3 mr-4">
+                                <i data-lucide="map-pin" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-white mb-2">Address</h3>
+                                <p class="text-gray-300">1234 Auto Drive<br>Los Angeles, CA 90210</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 rounded-full p-3 mr-4">
+                                <i data-lucide="clock" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg text-white mb-2">Hours</h3>
+                                <p class="text-gray-300">Mon-Fri: 9AM-8PM<br>Sat: 9AM-6PM<br>Sun: 11AM-5PM</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-600 rounded-full p-3 mr-4">
+                                <i data-lucide="phone" class="h-6 w-6 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-sem

@@ -1,0 +1,22 @@
+{
+  "name": "context-eng-agent",
+  "version": "1.0.0",
+  "description": "Multi-Agent LLM Code Assistant with Context Engineering",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "index": "node src/rag/indexer.js",
+    "ui": "node src/ui/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "chromadb": "^1.9.2",
+    "dotenv": "^16.4.5",
+    "glob": "^11.0.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.1.1",
+    "tree-sitter": "^0.21.1",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  }
+}

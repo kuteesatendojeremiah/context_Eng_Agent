@@ -1,0 +1,47 @@
+# Project Context — CLAUDE.md
+
+> This file is loaded by the multi-agent system to provide shared context to all agents.
+> Customize this file for your specific project.
+
+## Project Overview
+- **Name**: [Your Project Name]
+- **Stack**: [e.g. React 18 + TypeScript + Node.js + PostgreSQL]
+- **Purpose**: [Brief description]
+
+## Directory Structure
+```
+src/
+  components/   # React UI components
+  api/          # Express route handlers
+  utils/        # Shared utilities
+  types/        # TypeScript type definitions
+tests/          # Test files (Jest)
+```
+
+## Coding Conventions
+- Use async/await (no raw callbacks or .then chains)
+- All React components must have TypeScript props interfaces
+- API responses follow `{ data, error, message }` format
+- Use named exports (not default exports) for components
+- Write tests for all new utility functions
+
+## Key Patterns
+- Auth: JWT tokens in httpOnly cookies, use `renewSession()` to refresh
+- DB: All queries go through `src/utils/db.js` query helper
+- Error handling: Use `AppError` class from `src/utils/errors.js`
+- API routes: `/api/v1/[resource]` pattern
+
+## Known Gotchas
+- `refreshToken()` does NOT exist — use `renewSession()` instead
+- Never call the DB directly — always use the db utility
+- The `UserService` class is a singleton, don't re-instantiate it
+
+## Test Setup
+```bash
+npm test         # Run all tests
+npm run test:watch  # Watch mode
+npm run lint     # ESLint check
+```
+
+## Environment Variables
+See `.env.example` for required variables.

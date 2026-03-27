@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KENTE & CO. - Luxury African Fashion</title>
+    <meta name="description" content="Discover luxury African fashion that celebrates heritage with modern sophistication. Shop premium collections by KENTE & CO.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============ CSS CUSTOM PROPERTIES ============ */
+        :root {
+            --forest-green: #1B3A2D;
+            --warm-gold: #C9A84C;
+            --cream: #F5F0E8;
+            --charcoal: #2C2C2C;
+            --white: #FFFFFF;
+            --light-gray: #F8F8F8;
+            --medium-gray: #666666;
+            --dark-gray: #333333;
+            
+            /* Typography */
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Lato', sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+            --space-2xl: 4rem;
+            
+            /* Container */
+            --container-max: 1440px;
+            --container-padding: 1rem;
+            
+            /* Transitions */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+        
+        /* ============ RESET & BASE STYLES ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--charcoal);
+            background-color: var(--cream);
+        }
+        
+        /* ============ TYPOGRAPHY ============ */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-serif);
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: var(--space-sm);
+        }
+        
+        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+        h2 { font-size: clamp(2rem, 4vw, 3rem); }
+        h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
+        h4 { font-size: 1.25rem; }
+        h5 { font-size: 1.125rem; }
+        h6 { font-size: 1rem; }
+        
+        p {
+            margin-bottom: var(--space-sm);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color var(--transition-fast);
+        }
+        
+        a:hover {
+            color: var(--warm-gold);
+        }
+        
+        /* ============ UTILITY CLASSES ============ */
+        .container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 var(--container-padding);
+        }
+        
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--forest-green);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            z-index: 10000;
+            border-radius: 4px;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+        
+        .animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .animate.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-lg);
+            font-family: var(--font-sans);
+            font-weight: 500;
+            text-align: center;
+            border: 2px solid var(--forest-green);
+            background: var(--forest-green);
+            color: var(--white);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+            border-radius: 0;
+        }
+        
+        .btn:hover, .btn:focus {
+            background: transparent;
+            color: var(--forest-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(27, 58, 45, 0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--forest-green);
+            border-color: var(--forest-green);
+        }
+        
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: var(--forest-green);
+            color: var(--white);
+        }
+        
+        .btn-gold {
+            background: var(--warm-gold);
+            border-color: var(--warm-gold);
+            color: var(--white);
+        }
+        
+        .btn-gold:hover, .btn-gold:focus {
+            background: transparent;
+            color: var(--warm-gold);
+            border-color: var(--warm-gold);
+        }
+        
+        /* ============ HEADER & NAVIGATION ============ */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(245, 240, 232, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(27, 58, 45, 0.1);
+            transition: all var(--transition-normal);
+        }
+        
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md) 0;
+            min-height: 80px;
+        }
+        
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--forest-green);
+            letter-spacing: 1px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: var(--space-lg);
+        }
+        
+        .nav-links a {
+            font-weight: 500;
+            color: var(--charcoal);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--warm-gold);
+            transition: width var(--transition-normal);
+        }
+        
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .cart-btn {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--forest-green);
+            padding: var(--space-xs);
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--warm-gold);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--space-xs);
+            color: var(--forest-green);
+            display: none;
+        }
+        
+        /* ============ HERO SECTION ============ */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(rgba(27, 58, 45, 0.4), rgba(27, 58, 45, 0.4)), url('https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=1600&q=80') center/cover;
+        }
+        
+        .hero-content {
+            color: var(--white);
+            max-width: 600px;
+        }
+        
+        .hero h1 {
+            margin-bottom: var(--space-md);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-xl);
+            opacity: 0.9;
+        }
+        
+        /* ============ SECTIONS ============ */
+        section {
+            padding: var(--space-2xl) 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .section-header h2 {
+            color: var(--forest-green);
+            margin-bottom: var(--space-md);
+        }
+        
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* ============ COLLECTIONS GRID ============ */
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-2xl);
+        }
+        
+        .collection-card {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform var(--transition-normal);
+        }
+        
+        .collection-card:hover {
+            transform: scale(1.02);
+        }
+        
+        .collection-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+        
+        .collection-card:hover img {
+            transform: scale(1.1);
+        }
+        
+        .collection-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(27, 58, 45, 0.8));
+            color: var(--white);
+            padding: var(--space-xl) var(--space-lg);
+        }
+        
+        .collection-overlay h3 {
+            margin-bottom: var(--space-xs);
+        }
+        
+        /* ============ PRODUCT GRID ============ */
+        .products-filter {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: var(--space-xs) var(--space-md);
+            background: transparent;
+            border: 1px solid var(--forest-green);
+            color: var(--forest-green);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--forest-green);
+            color: var(--white);
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-xl);
+        }
+        
+        .product-card {
+            background: var(--white);
+            overflow: hidden;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-slow);
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            padding: var(--space-md);
+        }
+        
+        .product-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            margin-bottom: var(--space-xs);
+            color: var(--forest-green);
+        }
+        
+        .product-price {
+            font-weight: 600;
+            color: var(--warm-gold);
+            font-size: 1.1rem;
+        }
+        
+        .quick-add {
+            position: absolute;
+            bottom: var(--space-md);
+            right: var(--space-md);
+            background: var(--warm-gold);
+            color: var(--white);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+        }
+        
+        .product-card:hover .quick-add {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* ============ BRAND STORY SECTION ============ */
+        .brand-story {
+            background: var(--white);
+        }
+        
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-2xl);
+            align-items: center;
+        }
+        
+        .story-text h2 {
+            color: var(--forest-green);
+            margin-bottom: var(--space-md);
+        }
+        
+        .story-text p {
+            color: var(--medium-gray);
+            font-size: 1.1rem;
+            margin-bottom: var(--space-md);
+        }
+        
+        .story-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+        
+        /* ============ PRESS SECTION ============ */
+        .press {
+            background: var(--forest-green);
+            color: var(--white);
+            text-align: center;
+        }
+        
+        .press h2 {
+            color: var(--white);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .press-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-xl);
+            flex-wrap: wrap;
+        }
+        
+        .press-logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--warm-gold);
+            opacity: 0.8;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .press-logo:hover {
+            opacity: 1;
+        }
+        
+        /* ============ NEWSLETTER SECTION ============ */
+        .newsletter {
+            background: var(--cream);
+            text-align: center;
+        }
+        
+        .newsletter-form {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .newsletter-input {
+            flex: 1;
+            padding: var(--space-sm);
+            border: 1px solid var(--medium-gray);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            background: var(--white);
+        }
+        
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--forest-green);
+        }
+        
+        /* ============ FOOTER ============ */
+        footer {
+            background: var(--charcoal);
+            color: var(--white);
+            padding: var(--space-2xl) 0 var(--space-lg);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .footer-section h4 {
+            color: var(--warm-gold);
+            margin-bottom: var(--space-md);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: var(--space-xs);
+        }
+        
+        .footer-section ul li a {
+            color: var(--light-gray);
+            transition: color var(--transition-fast);
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--warm-gold);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+        
+        .social-links a {
+            color: var(--light-gray);
+            font-size: 1.2rem;
+            transition: color var(--transition-fast);
+        }
+        
+        .social-links a:hover {
+            color: var(--warm-gold);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid var(--dark-gray);
+            padding-top: var(--space-lg);
+            text-align: center;
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+        
+        /* ============ CART MODAL ============ */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            transition: right var(--transition-normal);
+            z-index: 1002;
+            padding: var(--space-lg);
+            overflow-y: auto;
+        }
+        
+        .cart-modal.active {
+            right: 0;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--charcoal);
+        }
+        
+        .cart-items {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .cart-item-price {
+            color: var(--warm-gold);
+            font-weight: 600;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            margin-top: var(--space-xs);
+        }
+        
+        .quantity-btn {
+            background: var(--light-gray);
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .cart-total {
+            text-align: center;
+            padding: var(--space-md) 0;
+            border-top: 2px solid var(--forest-green);
+        }
+        
+        .total-amount {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--forest-green);
+            font-weight: 600;
+        }
+        
+        /* ============ WATERMARK ============ */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(27, 58, 45, 0.9);
+            color: var(--white);
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            border-radius: 20px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* ============ RESPONSIVE DESIGN ============ */
+        @media (max-width: 768px) {
+            :root {
+                --container-padding: 1rem;
+                --space-2xl: 3rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero {
+                height: 70vh;
+                padding: var(--space-lg);
+            }
+            
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .story-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+            }
+            
+            .cart-modal {
+                width: 100vw;
+                right: -100vw;
+            }
+            
+            .press-logos {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .products-filter {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: var(--space-sm);
+            }
+            
+            .filter-btn {
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header id="header">
+        <nav class="navbar container" role="navigation" aria-label="Main navigation">
+            <div class="logo">KENTE & CO.</div>
+            
+            <ul class="nav-links" role="list">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#collections" class="nav-link">Collections</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#craft" class="nav-link">Our Craft</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            
+            <div class="nav-actions">
+                <button class="cart-btn" aria-label="Shopping cart" onclick="toggleCart()">
+                    🛍️
+                    <span class="cart-count" id="cart-count">0</span>
+                </button>
+                <button class="mobile-menu-btn" aria-label="Open menu" onclick="toggleMobileMenu()">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content animate">
+                <h1>Heritage Meets Luxury</h1>
+                <p>Discover the finest African-inspired fashion, crafted with modern sophistication for the global citizen.</p>
+                <a href="#collections" class="btn btn-gold">Shop Collections</a>
+            </div>
+        </section>
+
+        <!-- Featured Collections -->
+        <section id="collections" class="collections">
+            <div class="container">
+                <div class="section-header animate">
+                    <h2>Our Collections</h2>
+                    <p>Curated pieces that celebrate African heritage through contemporary luxury design</p>
+                </div>
+                
+                <div class="collections-grid">
+                    <div class="collection-card animate" onclick="showCollection('women')">
+                        <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=600&q=80" alt="Women's Collection" loading="lazy">
+                        <div class="collection-overlay">
+                            <h3>Women's Collection</h3>
+                            <p>Elegant silhouettes inspired by traditional African textiles</p>
+                        </div>
+                    </div>
+                    
+                    <div class="collection-card animate" onclick="showCollection('men')">
+                        <img src="https://images.unsplash.com/photo-1506629905607-d405dfb6e8c7?w=600&q=80" alt="Men's Collection" loading="lazy">
+                        <div class="collection-overlay">
+                            <h3>Men's Collection</h3>
+                            <p>Sophisticated menswear with contemporary African influences</p>
+                        </div>
+                    </div>
+                    
+                    <div class="collection-card animate" onclick="showCollection('accessories')">
+                        <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80" alt="Accessories Collection" loading="lazy">
+                        <div class="collection-overlay">
+                            <h3>Accessories</h3>
+                            <p>Handcrafted accessories that complete your luxurious look</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="products" style="background: var(--white);">
+            <div class="container">
+                <div class="section-header animate">
+                    <h2>Featured Products</h2>
+                    <p>Discover our most coveted pieces from across all collections</p>
+                </div>
+                
+                <div class="products-filter animate">
+                    <button class="filter-btn active" onclick="filterProducts('all')">All</button>
+                    <button class="filter-btn" onclick="filterProducts('women')">Women</button>
+                    <button class="filter-btn" onclick="filterProducts('men')">Men</button>
+                    <button class="filter-btn" onclick="filterProducts('accessories')">Accessories</button>
+                </div>
+                
+                <div class="products-grid" id="products-grid">
+                    <!-- Products will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Brand Story -->
+        <section id="about" class="brand-story">
+            <div class="container">
+                <div class="story-content animate">
+                    <div class="story-text">
+                        <h2>Our Story</h2>
+                        <p>Founded in Accra, Ghana, KENTE & CO. bridges the gap between traditional African craftsmanship and contemporary luxury fashion. Our pieces honor ancestral techniques while embracing modern sophistication.</p>
+                        <p>Each garment tells a story of heritage, crafted by skilled artisans who have passed down their techniques through generations. We believe that luxury fashion should celebrate culture while pushing creative boundaries.</p>
+                        <a href="#craft" class="btn btn-secondary">Learn About Our Craft</a>
+                    </div>
+                    <div class="story-image">
+                        <img src="https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=800&q=80" alt="African textile artisan at work" loading="lazy">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Press Section -->
+        <section class="press">
+            <div class="container">
+                <h2 class="animate">As Seen In</h2>
+                <div class="press-logos animate">
