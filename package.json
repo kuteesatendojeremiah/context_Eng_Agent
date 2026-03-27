@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Multi-Agent LLM Code Assistant with Context Engineering",
   "type": "module",
+  "main": "src/ui/server.js",
   "scripts": {
-    "start": "node src/index.js",
-    "index": "node src/rag/indexer.js",
-    "ui": "node src/ui/server.js"
+    "start": "node src/ui/server.js",   
+    "cli": "node src/index.js",     
+    "index": "node src/rag/indexer.js", 
+    "dev": "node src/ui/server.js"      
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
