@@ -928,8 +928,7 @@ e.g. Add input validation to the user registration form"></textarea>
         body: JSON.stringify({ task, repoPath, sessionId })
       });
 
-      const payload = await res.json();
-      if (!res.ok) throw new Error(payload.error || 'Run failed');
+      const payload = await parseApiResponse(res);
 
       const results = payload.results;
       const logs = results.phaseLogs || [];
@@ -1031,6 +1030,32 @@ e.g. Add input validation to the user registration form"></textarea>
     return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  async function parseApiResponse(res) {
+    const raw = await res.text();
+    let payload = null;
+
+    try {
+      payload = raw ? JSON.parse(raw) : null;
+    } catch {
+      payload = null;
+    }
+
+    if (!res.ok) {
+      const jsonError = payload && typeof payload.error === 'string' ? payload.error : '';
+      const textError = raw ? raw.slice(0, 400) : '';
+      const details = jsonError || textError || `HTTP ${res.status}`;
+
+      // Serverless platforms may return plain text/HTML on timeout instead of JSON.
+      if (res.status === 504 || /timed out|timeout|serverless/i.test(details)) {
+        throw new Error(`Request timed out on serverless (${res.status}). Try a smaller prompt or increase function max duration. Details: ${details}`);
+      }
+
+      throw new Error(details);
+    }
+
+    return payload ?? {};
+  }
+
   async function indexRepo() {
     const repoPath = document.getElementById('repoPath').value.trim();
     addLog('info', `Indexing ${repoPath}...`);
@@ -1039,7 +1064,7 @@ e.g. Add input validation to the user registration form"></textarea>
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ repoPath })
     });
-    const data = await res.json();
+    const data = await parseApiResponse(res);
     if (data.success) {
       addLog('info', `✅ Indexed ${data.chunksIndexed} code chunks`);
     } else {
@@ -1049,7 +1074,7 @@ e.g. Add input validation to the user registration form"></textarea>
 
   async function loadReports() {
     const res = await fetch('/api/reports');
-    const reports = await res.json();
+    const reports = await parseApiResponse(res);
     const list = document.getElementById('reportsList');
     if (reports.length === 0) {
       list.innerHTML = '<div style="color:var(--text3);font-size:0.7rem;padding:8px;font-family:\'JetBrains Mono\',monospace">No reports yet</div>';
@@ -1065,7 +1090,7 @@ e.g. Add input validation to the user registration form"></textarea>
 
   async function viewReport(file) {
     const res = await fetch(`/api/reports/${file}`);
-    const data = await res.json();
+    const data = await parseApiResponse(res);
     if (data.taskSpec) {
       showResults({
         title: data.taskSpec.title,
