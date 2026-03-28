@@ -141,7 +141,7 @@ export async function runAgent(role, task, context = {}) {
 
   const response = await client.messages.create({
     model: process.env.SUBAGENT_MODEL || "claude-sonnet-4-20250514",
-    max_tokens: parseInt(process.env.MAX_TOKENS_PER_AGENT) || 8000,
+    max_tokens: parseInt(process.env.MAX_TOKENS_PER_AGENT || "2800", 10),
     system: agentDef.system,
     messages: [{ role: "user", content: fullUserMessage }],
   });

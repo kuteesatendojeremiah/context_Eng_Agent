@@ -6,11 +6,11 @@
 
 import "dotenv/config";
 import express from "express";
-import { Orchestrator } from "../agents/orchestrator.js";
 import { indexRepository } from "../rag/indexer.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { advanceJob, createJob, getJob, getJobPublicView } from "../agents/job_runner.js";
 
 const app = express();
 const PORT = process.env.UI_PORT || 3000;
@@ -21,53 +21,47 @@ const PREVIEWS_DIR = path.join(RUNTIME_ROOT, "previews");
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), "src/ui/public")));
 
-// ── Run agent endpoint ────────────────────────────────────────────────────────
+// ── Run agent endpoint (job-based, timeout-safe) ─────────────────────────────
 app.post("/api/run", async (req, res) => {
   const { task, repoPath } = req.body;
 
   if (!task) return res.status(400).json({ error: "Task is required" });
 
   try {
-    const repoDir = repoPath || process.env.REPO_PATH || "./sample_repo";
-
-    // Index if needed
-    const indexBase = process.env.VERCEL ? "/tmp" : process.cwd();
-    const indexPath = path.join(indexBase, ".code_index.json");
-    if (!fs.existsSync(indexPath)) {
-      await indexRepository(repoDir);
-    }
-
-    fs.mkdirSync(REPORTS_DIR, { recursive: true });
-    fs.mkdirSync(PREVIEWS_DIR, { recursive: true });
-    const orchestrator = new Orchestrator(repoDir, { runtimeRoot: RUNTIME_ROOT });
-    const results = await orchestrator.run(task);
-
-    const reportPath = path.join(REPORTS_DIR, `report_${Date.now()}.json`);
-    orchestrator.saveReport(results, reportPath);
-
-    res.json({
-      status: "complete",
-      results: {
-        title: results.taskSpec?.title,
-        steps: results.agentResults?.length,
-        meta: results.meta,
-        reviewSummary: results.review?.result?.slice(0, 800),
-        agentOutputs: results.agentResults?.map((ar) => ({
-          step: ar.step.id,
-          role: ar.agentResult.role,
-          description: ar.step.description,
-          output: ar.agentResult.result,
-        })),
-        tests: results.tests?.result,
-        reportPath,
-        previewPath: results.previewPath || null,
-        hasPreview: !!results.previewHtml,
-        phaseLogs: results.phaseLogs || [],
-      },
+    const job = createJob(RUNTIME_ROOT, { task, repoPath });
+    res.status(202).json({
+      status: "accepted",
+      jobId: job.id,
+      pollUrl: `/api/job/${job.id}`,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.get("/api/job/:id", async (req, res) => {
+  try {
+    const job = await advanceJob(RUNTIME_ROOT, req.params.id);
+    if (!job) return res.status(404).json({ error: "Job not found" });
+    res.json(getJobPublicView(job));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/download/:id", (req, res) => {
+  const job = getJob(RUNTIME_ROOT, req.params.id);
+  if (!job) return res.status(404).json({ error: "Job not found" });
+  if (job.status !== "complete") {
+    return res.status(409).json({ error: "Job is not complete yet" });
+  }
+
+  const bundlePath = job.results?.bundlePath;
+  if (!bundlePath || !fs.existsSync(bundlePath)) {
+    return res.status(404).json({ error: "Download bundle not found" });
+  }
+
+  return res.download(bundlePath, `${job.id}.zip`);
 });
 
 // ── Index endpoint ────────────────────────────────────────────────────────────
@@ -93,7 +87,7 @@ app.get("/api/reports", (req, res) => {
 
   const reports = files.map((f) => {
     const data = JSON.parse(fs.readFileSync(path.join(REPORTS_DIR, f), "utf8"));
-    return { file: f, title: data.taskSpec?.title, meta: data.meta };
+    return { file: f, title: data.taskSpec?.title, meta: data.meta || null };
   });
 
   res.json(reports);
